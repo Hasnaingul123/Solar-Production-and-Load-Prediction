@@ -1,0 +1,11 @@
+Evaluation
+
+Prediction
+xgb_pred = my_xgb.predict(X_test)
+
+Error
+xgb_mae = mean_absolute_error(test_data[['generation_W', 'load_W']], xgb_pred)
+
+print(f"MAE for PV Generation and Load: {xgb_mae:.4f}")
+
+MAE for PV Generation and Load: 1178.7056

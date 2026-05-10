@@ -1,52 +1,41 @@
 # Solar Production and Load Prediction
 
-## Project Objective
-Develop a model to predict PV (Photovoltaic) generation and load consumption values for 10-minute intervals within a look-ahead period of 1 to 4 hours. The specific look-ahead period will vary each time. The model's performance is evaluated using test data, with the ground truth known only to the competition hosts and the Kaggle Evaluator.
+## 📌 Project Overview
+The objective of this project is to develop a robust machine learning model to predict PV (Photovoltaic) generation and user load consumption for 10-minute intervals within a look-ahead period of 1 to 4 hours. The model's performance was evaluated in a Kaggle competition using real-world data from SkyElectric and SkyLabs.
 
-## Project Description
-Predicts PV generation and user load at 10-minute intervals using real-world data from SkyElectric and SkyLabs. It applies Machine Learning techniques and is evaluated using Mean Absolute Error (MAE) in a Kaggle competition.
+## ⚠️ Problem Statement
+Predicting solar power generation and user load consumption is highly complex due to:
+- **Diurnal Cycles & Weather:** Solar generation heavily depends on the time of day and unpredictable weather conditions (e.g., cloud cover).
+- **Varied Load Profiles:** Power consumption fluctuates based on whether the system is Residential or Commercial, with each having distinct peak usage hours.
+- **Time-Series Complexity:** Predicting a continuous window (1 to 4 hours ahead) requires a model that can capture both immediate sequential dependencies and long-term seasonality without degrading in accuracy over longer look-ahead periods.
 
-## Data Overview & Patterns
-The dataset comprises three core components:
-1. **System Metadata (`systems_new.csv`):** Contains static details about each solar installation, including `system_id`, `connection_type` (Residential vs. Commercial), `location`, `panels_capacity`, and `load_capacity`. This allows the model to understand the *scale* of each system.
-2. **Time-Series Data (`train_data.csv` & `test_data_masked.csv`):** Contains the historical target variables recorded in exactly **10-minute intervals**.
-   - **Generation Pattern:** Follows a diurnal (daily) cycle. It is `0.0` at night, rises at sunrise, peaks near solar noon, and drops back to zero at sunset. Fluctuations during the day correspond to weather conditions (e.g., cloud cover).
-   - **Load Pattern:** Continuous 24/7 consumption. Residential systems typically show evening spikes, while commercial systems peak during business hours.
-3. **The "Look-Ahead" Window:** The testing goal involves predicting a block of future values (1 to 4 hours ahead). Because data is in 10-minute intervals, a 1-hour look-ahead requires 6 consecutive predictions.
+## 💡 Proposed Solution & Methodology
+To tackle these challenges, I implemented a robust **Multi-Output Regression** pipeline using **XGBoost**. Instead of relying solely on traditional time-series forecasting methods, I engineered strong temporal features to allow a highly efficient tabular model to capture the complex sequential patterns.
 
-## Process & Methodology
-1. **Exploratory Data Analysis (EDA) & Preprocessing**
-   - Merged training/test datasets with system-level details to provide scaling context.
-   - Performed critical feature engineering by extracting temporal features (`hour`, `day`, `month`, `day_of_week`) from timestamps. This step is vital for a tabular model to understand time-based patterns like the diurnal cycle.
-   - Applied One-Hot Encoding to categorical columns like `connection_type`.
-2. **Model Development**
-   - Trained an **XGBoost Regressor** (`XGBRegressor`) with the `reg:absoluteerror` objective.
-   - Designed to handle multi-output regression (predicting both PV generation and load simultaneously) across the required look-ahead periods.
-3. **Evaluation**
-   - **Metric:** Mean Absolute Error (MAE), comparing the model's predictions to actual PV generation and load consumption.
-   - **Current Model Performance:** Achieved an MAE of `1178.7056` on the validation set.
+### 🔍 Important Work & Implementation Details
+1. **Data Integration & Scaling:** 
+   - Merged the core time-series data with system-specific metadata (`panels_capacity`, `load_capacity`, `location`, etc.). This gave the model the necessary physical context to scale its predictions accurately for different installations.
+2. **Feature Engineering:** 
+   - Extracted `hour`, `day`, `month`, and `day_of_week` from the raw timestamp. This was critical for the model to inherently understand diurnal cycles (e.g., knowing generation must be `0.0` at night) and weekly consumption behaviors.
+3. **Categorical Encoding:** 
+   - Applied One-Hot Encoding to categorical variables such as `connection_type` (Commercial vs. Residential) to ensure mathematical compatibility with the XGBoost algorithm.
+4. **Model Training:**
+   - Designed a Multi-Output **XGBoost Regressor** (`XGBRegressor`) using the `reg:absoluteerror` objective to predict both generation and load simultaneously.
+   - Tuned hyperparameters (`learning_rate=0.05`, `max_depth=7`, `n_estimators=100`) to prevent overfitting and ensure steady, generalized learning.
 
-## Submission Format
-For each ID and timestamp in the test set, the model predicts the power generation and load consumption. The submission file includes a header and follows this format:
-```csv
-test_id,system_id,timestamp,generation_W,load_W
-W6GEQ51E,39,2023-08-12 23:10:00,10968.3,6497.07
-RBYF8A9F,39,2023-08-12 23:20:00,3445.44,17995.29
-```
+## 📊 Results & Evaluation
+The model was evaluated using **Mean Absolute Error (MAE)**, which calculates the average magnitude of prediction errors across both target variables.
 
-## Repository Structure
-- `psv-model.ipynb`: Contains the executed code for data loading, preprocessing, feature engineering, model training (XGBoost), and evaluation.
-- `solar-production-and-load-prediction-competition/`: Contains the competition datasets (`systems_new.csv`, `train_data.csv`, `test_data_masked.csv`, `sample_submissions.csv`).
-- `Project Evaluation/`: Contains supplementary materials and details for the project.
+- **Validation MAE:** `1178.7056`
+- **Significance:** This result demonstrates that the model successfully learned the complex relationships between the physical system limits, temporal patterns, and the resulting generation/load values, providing a highly reliable forecast for the 1 to 4 hour look-ahead periods.
 
----
-## Frequently Asked Questions (Interview Prep)
+## 📂 Repository Structure
+- `psv-model.ipynb`: Core Jupyter Notebook containing the full pipeline (Data Loading, EDA, Preprocessing, Feature Engineering, Training, and Evaluation).
+- `solar-production-and-load-prediction-competition/`: Directory containing the raw datasets.
+- `Project Evaluation/`: Supplementary materials and details regarding the Kaggle competition evaluation criteria.
 
-**1. Why is this project important?**
-Predicting solar generation and energy consumption helps in better energy management. By accurately forecasting generation and load, we can efficiently balance the power grid, store excess energy, avoid outages, and reduce overall electricity costs.
-
-**2. Why use XGBoost instead of a Time-Series specific model?**
-XGBoost is an industry-standard, highly efficient algorithm that handles tabular data extremely well. It is fast and great at finding complex, non-linear relationships. By engineering strong temporal features (hour, day, month), we successfully adapted this tabular model for time-series forecasting.
-
-**3. How did you prevent the model from overfitting?**
-I used an 80/20 train-test split to ensure the model was evaluated on unseen validation data. Additionally, I tuned XGBoost hyperparameters such as `learning_rate` (0.05) and `max_depth` (7) to control complexity and encourage steady learning without memorization.
+## 🚀 How to Run
+1. Clone the repository.
+2. Download the Kaggle competition datasets into the `solar-production-and-load-prediction-competition/` folder.
+3. Install required dependencies (`pandas`, `xgboost`, `scikit-learn`, `matplotlib`, `seaborn`).
+4. Run all cells in `psv-model.ipynb` to reproduce the preprocessing, training, and evaluation results.

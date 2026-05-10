@@ -31,11 +31,11 @@ The model was evaluated using **Mean Absolute Error (MAE)**, which calculates th
 
 ## 📂 Repository Structure
 - `psv-model.ipynb`: Core Jupyter Notebook containing the full pipeline (Data Loading, EDA, Preprocessing, Feature Engineering, Training, and Evaluation).
-- `solar-production-and-load-prediction-competition/`: Directory containing the raw datasets.
+- `solar-production-and-load-prediction-competition/`: Directory containing the real-world datasets (*Note: Not included in this repository due to confidentiality and data sharing prohibitions*).
 - `Project Evaluation/`: Supplementary materials and details regarding the Kaggle competition evaluation criteria.
 
 ## 🚀 How to Run
 1. Clone the repository.
-2. Download the Kaggle competition datasets into the `solar-production-and-load-prediction-competition/` folder.
+2. Place the authorized, private datasets into the `solar-production-and-load-prediction-competition/` folder (data is prohibited from public sharing).
 3. Install required dependencies (`pandas`, `xgboost`, `scikit-learn`, `matplotlib`, `seaborn`).
 4. Run all cells in `psv-model.ipynb` to reproduce the preprocessing, training, and evaluation results.

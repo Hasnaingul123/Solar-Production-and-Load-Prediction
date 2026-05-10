@@ -36,6 +36,5 @@ The model was evaluated using **Mean Absolute Error (MAE)**, which calculates th
 
 ## 🚀 How to Run
 1. Clone the repository.
-2. Place the authorized, private datasets into the `solar-production-and-load-prediction-competition/` folder (data is prohibited from public sharing).
-3. Install required dependencies (`pandas`, `xgboost`, `scikit-learn`, `matplotlib`, `seaborn`).
-4. Run all cells in `psv-model.ipynb` to reproduce the preprocessing, training, and evaluation results.
+2. Install required dependencies (`pandas`, `xgboost`, `scikit-learn`, `matplotlib`, `seaborn`).
+3. Run all cells in `psv-model.ipynb` to reproduce the preprocessing, training, and evaluation results.
